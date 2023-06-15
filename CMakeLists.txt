@@ -7,22 +7,29 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(LAYER_SRCS
+    Device.cpp
+    Device.h
     DispatcheTable.h
+    Handle.h
     Instance.cpp
     Instance.h
     Layer.cpp
+    PhysicalDevice.h
+    Queue.cpp
+    Queue.h
     Surface.cpp
     Surface.h
-    Swapchain.cpp
     Swapchain.h)
 
 list(TRANSFORM LAYER_SRCS PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/Layer/")
 
 set(DIRECT2D_SRCS
+    Direct.h
     Surface.cpp
     Surface.h
     Swapchain.cpp
-    Swapchain.h)
+    Swapchain.h
+    Sync.h)
 
 list(TRANSFORM DIRECT2D_SRCS PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/WSI/Direct2D/")
 
@@ -42,11 +49,13 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
-    vulkan)
+    Vulkan-Headers)
 
-set(LAYER_JSON_MANIFEST "${CMAKE_CURRENT_SOURCE_DIR}/Layer/VkLayer_LIGHTWSI_window_system_integration.json")
+set(LAYER_JSON_MANIFEST "${CMAKE_CURRENT_SOURCE_DIR}/Layer/VkLayer_LightWSI_window_system_integration.json")
 file(COPY ${LAYER_JSON_MANIFEST} DESTINATION ${CMAKE_BINARY_DIR})
 message(STATUS "LightWSI install ${LAYER_JSON_MANIFEST} to ${CMAKE_BINARY_DIR}")
+
+target_precompile_headers(${PROJECT_NAME} PUBLIC $<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/lwsipch.h>)
 
 set_target_properties(${PROJECT_NAME}
     PROPERTIES

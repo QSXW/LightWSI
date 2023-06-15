@@ -25,6 +25,7 @@ static inline T GetProcAddress(PFN pGetProcAddress, const char *pName, HandleTyp
     FUNC(GetPhysicalDeviceProperties,                 true ) \
     FUNC(GetPhysicalDeviceImageFormatProperties,      true ) \
     FUNC(EnumerateDeviceExtensionProperties,          true ) \
+    FUNC(GetPhysicalDeviceMemoryProperties,           true ) \
     /* VK_KHR_surface */                                     \
     FUNC(DestroySurfaceKHR,                           false) \
     FUNC(GetPhysicalDeviceSurfaceCapabilitiesKHR,     false) \
@@ -75,6 +76,7 @@ struct InstanceDispatchTable
     /* Vulkan 1.0 */                                   \
     FUNC(GetDeviceProcAddr,                    true )  \
     FUNC(GetDeviceQueue,                       true )  \
+    FUNC(DeviceWaitIdle,                       true )  \
     FUNC(QueueSubmit,                          true )  \
     FUNC(QueueWaitIdle,                        true )  \
     FUNC(CreateCommandPool,                    true )  \
@@ -94,9 +96,11 @@ struct InstanceDispatchTable
     FUNC(DestroyFence,                         true )  \
     FUNC(CreateSemaphore,                      true )  \
     FUNC(DestroySemaphore,                     true )  \
+    FUNC(SignalSemaphore,                      true )  \
     FUNC(ResetFences,                          true )  \
     FUNC(WaitForFences,                        true )  \
     FUNC(DestroyDevice,                        true )  \
+    FUNC(GetMemoryWin32HandlePropertiesKHR,    true )  \
     /* VK_EXT_private_data */                          \
     FUNC(CreatePrivateDataSlotEXT,             true )  \
     FUNC(DestroyPrivateDataSlotEXT,            true )  \

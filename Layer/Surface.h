@@ -6,6 +6,7 @@
 namespace LightWSI
 {
 
+class Device;
 class Surface
 {
 public:
@@ -13,9 +14,15 @@ public:
 
 	virtual VkResult GetCapatibility(VkPhysicalDevice physicalDevice, VkSurfaceCapabilitiesKHR *pSurfaceCapabilities) = 0;
 
-	virtual Swapchain *CreateSwapchain(VkDevice device, const VkSwapchainCreateInfoKHR *pCreateInfo, const VkAllocationCallbacks *pAllocator) = 0;
+	virtual VkResult GetFormats(VkPhysicalDevice physicalDevice, uint32_t *pSurfaceFormatCount, VkSurfaceFormatKHR *pSurfaceFormats) = 0;
 
-	static VkResult CreateWin32SurfaceKHR(VkInstance handle, const VkWin32SurfaceCreateInfoKHR *pCreateInfo, const VkAllocationCallbacks *pAllocator, VkSurfaceKHR *pSurface);
+	virtual VkResult GetPresentModes(VkPhysicalDevice physicalDevice, uint32_t *pPresentModeCount, VkPresentModeKHR *pPresentModes) = 0;
+
+	virtual VkResult CreateSwapchain(Device *device, const VkSwapchainCreateInfoKHR *pCreateInfo, const VkAllocationCallbacks *pAllocator, SuperSwapchain **ppSwapchain) = 0;
+
+	static VkResult CreateWin32SurfaceKHR(Instance *instance, const VkWin32SurfaceCreateInfoKHR *pCreateInfo, const VkAllocationCallbacks *pAllocator, Surface **ppSurface);
+
+	static void DestroySurface(Instance *instance, Surface *surface, const VkAllocationCallbacks *pAllocator);
 };
 
 using SuperSurface = Surface;

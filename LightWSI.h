@@ -17,3 +17,6 @@
 #define LWSI_VKAPI_CALL(RET) extern "C" LIGHTWSI_API VKAPI_ATTR RET VKAPI_CALL
 #define LWSI_LOG_ERROR(...) 
 #define LWSI_LOG_WARNING(...)
+#define LWSI_LENGTH(a) (sizeof(a) / sizeof(a[0]))
+
+#define LWSI_SWAPPABLE(T) T(T &&other) : T{} { other.Swap(*this); } T &operator=(T &&other) { T(std::move(other)).Swap(*this); return *this; }  T(const T &) = delete; T &operator=(const T &) = delete;
