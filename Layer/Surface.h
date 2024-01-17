@@ -20,7 +20,9 @@ public:
 
 	virtual VkResult CreateSwapchain(Device *device, const VkSwapchainCreateInfoKHR *pCreateInfo, const VkAllocationCallbacks *pAllocator, SuperSwapchain **ppSwapchain) = 0;
 
+#ifdef VK_USE_PLATFORM_WIN32_KHR
 	static VkResult CreateWin32SurfaceKHR(Instance *instance, const VkWin32SurfaceCreateInfoKHR *pCreateInfo, const VkAllocationCallbacks *pAllocator, Surface **ppSurface);
+#endif
 
 	static void DestroySurface(Instance *instance, Surface *surface, const VkAllocationCallbacks *pAllocator);
 };

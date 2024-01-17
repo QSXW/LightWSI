@@ -10,6 +10,7 @@
 #include <cassert>
 #include <iostream>
 #include <vector>
+#include <cstring>
 
 #include "LightWSI.h"
 #include "DispatcheTable.h"
@@ -103,7 +104,7 @@ void DestroySwapchainKHR(VkDevice device, VkSwapchainKHR handle, const VkAllocat
 {
     Swapchain *swapchain = (Swapchain *)handle;
     swapchain->~Swapchain();
-    
+
     Device *pDevice = Device::Get(device);
     pDevice->allocator.deallocate_bytes(swapchain, swapchain->GetSize());
 }
@@ -130,8 +131,9 @@ VkResult QueuePresentKHR(VkQueue handle, const VkPresentInfoKHR *pPresentInfo)
     Queue queue{handle};
     for (uint32_t i = 0; i < pPresentInfo->swapchainCount; i++)
     {
+		VkSemaphore waitSemaphore = pPresentInfo->pWaitSemaphores ? pPresentInfo->pWaitSemaphores[i] : VK_NULL_HANDLE;
         Swapchain *swapchain = (Swapchain *)pPresentInfo->pSwapchains[i];
-        VkResult result = swapchain->QueuePresent(&queue, pPresentInfo->pImageIndices[i], pPresentInfo->pWaitSemaphores[i]);
+		VkResult result = swapchain->QueuePresent(&queue, pPresentInfo->pImageIndices[i], waitSemaphore);
         if (pPresentInfo->pResults)
         {
             pPresentInfo->pResults[i] = result;
@@ -172,7 +174,7 @@ VkResult CreateInstance(const VkInstanceCreateInfo *pCreateInfo, const VkAllocat
 
     VkInstanceCreateInfo createInfo = *pCreateInfo;
     layerLinkInfo->u.pLayerInfo = layerLinkInfo->u.pLayerInfo->pNext;
-    
+
     auto pCreateInstance = GetProcAddress<PFN_vkCreateInstance>(pGetInstanceProcAddr, "vkCreateInstance");
     if (!pCreateInstance)
     {
@@ -253,7 +255,7 @@ VkResult CreateDevice(VkPhysicalDevice physicalDevice, const VkDeviceCreateInfo 
 
     layerLinkInfo->u.pLayerInfo = layerLinkInfo->u.pLayerInfo->pNext;
     VkDeviceCreateInfo createInfo = *pCreateInfo;
-    
+
     std::vector<const char *> deviceExntensions;
     deviceExntensions.reserve(pCreateInfo->enabledExtensionCount);
     for (size_t i = 0; i < pCreateInfo->enabledExtensionCount; i++)
@@ -307,7 +309,10 @@ void DestoryDevice(VkDevice handle, const VkAllocationCallbacks *pAllocator)
 #define LWSI_GET_PROC(func) if (!strcmp(pName, "vk" #func)) { return (PFN_vkVoidFunction)func; }
 PFN_vkVoidFunction GetInstanceProcAddr(VkInstance handle, const char *pName)
 {
+#ifdef VK_USE_PLATFORM_WIN32_KHR
     LWSI_GET_PROC(CreateWin32SurfaceKHR                  )
+#endif
+
     LWSI_GET_PROC(DestroySurfaceKHR                      )
     LWSI_GET_PROC(GetPhysicalDeviceSurfaceSupportKHR     )
     LWSI_GET_PROC(GetPhysicalDeviceSurfaceCapabilitiesKHR)
@@ -390,38 +395,4 @@ LWSI_VKAPI_CALL(VkResult)
 LightWSI_EnumerateInstanceExtensionProperties(uint32_t *pPropertyCount, VkLayerProperties *pProperties)
 {
     return VK_SUCCESS;
-}
-
-BOOL WINAPI DllMain(
-    HINSTANCE hinstDLL,        // handle to DLL module
-    DWORD fdwReason,           // reason for calling function
-    LPVOID lpvReserved)        // reserved
-{
-    // Perform actions based on the reason for calling.
-    switch (fdwReason)
-    {
-        case DLL_PROCESS_ATTACH:
-            // Initialize once for each new process.
-            // Return FALSE to fail DLL load.
-            break;
-
-        case DLL_THREAD_ATTACH:
-            // Do thread-specific initialization.
-            break;
-
-        case DLL_THREAD_DETACH:
-            // Do thread-specific cleanup.
-            break;
-
-        case DLL_PROCESS_DETACH:
-
-            if (lpvReserved != nullptr)
-            {
-                break;        // do not do cleanup if process termination scenario
-            }
-
-            // Perform any necessary cleanup.
-            break;
-    }
-    return TRUE;        // Successful DLL_PROCESS_ATTACH.
 }

@@ -64,7 +64,7 @@ public:
 
     operator bool() const
     {
-		return !!handle;    
+		return !!handle;
     }
 
     void Swap(Fence &other)

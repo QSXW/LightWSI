@@ -92,8 +92,8 @@ VkResult Swapchain::QueuePresent(Queue *queue, uint32_t imageIndex, VkSemaphore 
     VkSubmitInfo submitInfo{
         .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO
     };
-    submitInfo.waitSemaphoreCount = 1;
-    submitInfo.pWaitSemaphores    = &semaphore;
+	submitInfo.waitSemaphoreCount = semaphore ? 1 : 0;
+    submitInfo.pWaitSemaphores    = semaphore ? &semaphore : nullptr;
     submitInfo.pWaitDstStageMask  = &stageFlags;
 
     VkResult result = queue->Submit(1, &submitInfo, VK_NULL_HANDLE);

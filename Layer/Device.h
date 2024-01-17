@@ -36,13 +36,13 @@ public:
     U *SetPrivateData(VkObjectType objectType, T objectHandle, VkPrivateDataSlot privateDataSlot)
     {
         U *data = nullptr;
-        GetPrivateData(objectType, (uint64_t) objectHandle, privateDataSlot, (uint64_t)&data);
+        GetPrivateData(objectType, (uint64_t) objectHandle, privateDataSlot, (uint64_t *)&data);
     }
 
     template <class T, class U>
     VkResult SetPrivateData(VkObjectType objectType, T objectHandle, VkPrivateDataSlot privateDataSlot, U data)
     {
-        SetPrivateData(objectType, (uint64_t) objectHandle, privateDataSlot, (uint64_t)data);
+        SetPrivateData(objectType, (uint64_t)objectHandle, privateDataSlot, (uint64_t)data);
     }
 
 public:

@@ -43,7 +43,7 @@ source_group("//WSI//Direct2D//" FILES ${DIRECT2D_SRCS})
 add_library(${PROJECT_NAME} SHARED
     ${SRC_FILES}
     ${LAYER_SRCS}
-    ${DIRECT2D_SRCS})
+    $<$<PLATFORM_ID:Windows>:${DIRECT2D_SRCS}>)
 
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR})

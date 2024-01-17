@@ -2,6 +2,7 @@
 
 #include <unordered_map>
 #include <mutex>
+#include <memory>
 
 namespace LightWSI
 {
@@ -35,7 +36,7 @@ void Instance::Set(VkInstance handle, const VkInstanceCreateInfo *pCreateInfo, I
 Instance *Instance::Get(VkInstance instance)
 {
 	std::lock_guard lock(InstanceDataLock);
-	auto it = InstanceData.find(GetKey(instance));	
+	auto it = InstanceData.find(GetKey(instance));
 	return it != InstanceData.end() ? it->second.get() : nullptr;
 }
 

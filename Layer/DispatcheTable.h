@@ -16,7 +16,15 @@ static inline T GetProcAddress(PFN pGetProcAddress, const char *pName, HandleTyp
 
     return func;
 }
-                                                             
+
+#ifdef VK_USE_PLATFORM_WIN32_KHR
+#define INSTANCE_FUNCTION_LIST_WIN32_KHR(FUNC)               \
+    /* VK_EXT_Win32_surface */                               \
+    FUNC(CreateWin32SurfaceKHR,                       false)
+#else
+#define INSTANCE_FUNCTION_LIST_WIN32_KHR(FUNC)
+#endif
+
 #define INSTANCE_FUNCTION_LIST(FUNC)                         \
     /* Vulkan 1.0 */                                         \
     FUNC(GetInstanceProcAddr,                         true ) \
@@ -32,8 +40,6 @@ static inline T GetProcAddress(PFN pGetProcAddress, const char *pName, HandleTyp
     FUNC(GetPhysicalDeviceSurfaceFormatsKHR,          false) \
     FUNC(GetPhysicalDeviceSurfacePresentModesKHR,     false) \
     FUNC(GetPhysicalDeviceSurfaceSupportKHR,          false) \
-    /* VK_EXT_Win32_surface */                               \
-    FUNC(CreateWin32SurfaceKHR,                       false) \
     /* VK_EXT_headless_surface */                            \
     FUNC(CreateHeadlessSurfaceEXT,                    false) \
     /* VK_KHR_get_surface_capabilities2 */                   \
@@ -49,7 +55,8 @@ static inline T GetProcAddress(PFN pGetProcAddress, const char *pName, HandleTyp
     FUNC(GetPhysicalDevicePresentRectanglesKHR,       false) \
     /* VK_KHR_external_fence_capabilities or */              \
     /* 1.1 (without KHR suffix) */                           \
-    FUNC(GetPhysicalDeviceExternalFencePropertiesKHR, false)
+    FUNC(GetPhysicalDeviceExternalFencePropertiesKHR, false) \
+    INSTANCE_FUNCTION_LIST_WIN32_KHR(FUNC)
 
 struct InstanceDispatchTable
 {
@@ -71,6 +78,13 @@ struct InstanceDispatchTable
     INSTANCE_FUNCTION_LIST(FUNC)
 #undef FUNC
 };
+
+#ifdef VK_USE_PLATFORM_WIN32_KHR
+#define DEVICE_FUNCTION_LIST_WIN32_KHR(FUNC)      \
+    FUNC(GetMemoryWin32HandlePropertiesKHR, true)
+#else
+#define DEVICE_FUNCTION_LIST_WIN32_KHR(FUNC)
+#endif
 
 #define DEVICE_FUNCTION_LIST(FUNC)                     \
     /* Vulkan 1.0 */                                   \
@@ -100,7 +114,6 @@ struct InstanceDispatchTable
     FUNC(ResetFences,                          true )  \
     FUNC(WaitForFences,                        true )  \
     FUNC(DestroyDevice,                        true )  \
-    FUNC(GetMemoryWin32HandlePropertiesKHR,    true )  \
     /* VK_EXT_private_data */                          \
     FUNC(CreatePrivateDataSlotEXT,             true )  \
     FUNC(DestroyPrivateDataSlotEXT,            true )  \
@@ -128,7 +141,8 @@ struct InstanceDispatchTable
     FUNC(GetFenceFdKHR,                        false)  \
     FUNC(ImportFenceFdKHR,                     false)  \
     /* VK_KHR_external_semaphore_fd */                 \
-    FUNC(ImportSemaphoreFdKHR,                 false)
+    FUNC(ImportSemaphoreFdKHR,                 false)  \
+    DEVICE_FUNCTION_LIST_WIN32_KHR(FUNC)
 
 struct DeviceDispatchTable
 {
